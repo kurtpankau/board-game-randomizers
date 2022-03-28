@@ -1,0 +1,249 @@
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<html>
+    <body>
+        <div id="unmatchedRandomizer">
+            <br />
+            <h3>Setup randomizer for the <i>Unmatched</i> games</h3>
+            <div>How many players?
+                <select v-model="count">
+                    <option>Two</option>
+                    <option>Four</option>
+                </select>
+            </div>
+            <br />
+            <div>
+                Select Sets:
+                <div>
+                    <input type="checkbox" v-model="allSelected" @click="selectAll">
+                    <label><i>Select all</i></label>
+                </div>
+                <div v-for="set in sets">
+                    <input type="checkbox" v-model="set.include" />
+                    <label>{{ set.name }}</label>
+                </div>
+            </div>
+            <div v-if="showSetup">
+                <h4>Fighters:</h4>
+                    <div v-for="(player, index) in players">
+                        Player {{ index + 1 }}: {{ player }}
+                    </div>
+                <h4>Battlefield:</h4>
+                {{ battlefield }}
+            </div>
+            <div>
+                <br />
+                <button v-if="!showSetup" @click="getSetup">
+                    Get Setup
+                </button>
+                <button v-if="showSetup" @click="getSetup">
+                    Get a New Setup
+                </button>
+                <p> {{ errorMessage }}</p>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+var app = new Vue({
+    el: "#unmatchedRandomizer",
+    data: {
+        players: [],
+        battlefield: '',
+        count: 'Two',
+        showSetup: false,
+        errorMessage: '',
+        allSelected: false,
+        sets: [
+            {
+                name: "Battle of Legends, Vol 1",
+                fighters: [
+                    "King Arthur",
+                    "Medusa",
+                    "Alice",
+                    "Sinbad"
+                ],
+                battlefields: [
+                    {
+                        name: "Sarpedon",
+                        players: 4
+                    },
+                    {
+                        name: "Marmoreal",
+                        players: 4
+                    }
+                ],
+            },
+            {
+                name: "Robin Hood vs Bigfoot",
+                fighters: [
+                    "Robin Hood",
+                    "Bigfoot"
+                ],
+                battlefields: [
+                    {
+                        name: "Yukon",
+                        players: 2
+                    },
+                    {
+                        name: "Sherwood Forest",
+                        players: 2
+                    }
+                ],
+            },
+            {
+                name: "Bruce Lee",
+                fighters: [
+                    "Bruce Lee"
+                ],
+                battlefields: [],
+            },
+            {
+                name: "Jurassic Park: Ingen vs Raptors",
+                fighters: [
+                    "Ingen",
+                    "Raptors"
+                ],
+                battlefields: [
+                    {
+                        name: "Raptor Paddock",
+                        players: 2
+                    }
+                ],
+            },
+            {
+                name: "Cobble & Fog",
+                fighters: [
+                    "Sherlock Holmes",
+                    "Dracula",
+                    "Invisible Man",
+                    "Dr. Jekyll & Mr. Hyde"
+                ],
+                battlefields: [
+                    {
+                        name: "Soho", 
+                        players: 4
+                    },
+                    {
+                        name: "Baskerville Manor",
+                        players: 4
+                    }
+                ],
+            },
+            {
+                name: "Buffy the Vampire Slayer",
+                fighters: [
+                    "Buffy",
+                    "Spike",
+                    "Willow",
+                    "Angel"
+                ],
+                battlefields: [
+                    {
+                        name: "Sunnydale High",
+                        players: 4
+                    },
+                    {
+                        name: "The Bronze",
+                        players: 4
+                    }
+                ]
+            },
+            {
+                name: "Little Red Riding Hood vs Beowulf",
+                fighters: [
+                    "Little Red Riding Hood",
+                    "Beowulf"
+                ],
+                battlefields: [
+                    {
+                        name: "Hedriot",
+                        players: 2
+                    }
+                ]
+            },
+            {
+                name: "Deadpool",
+                fighters: [
+                    "Deadpool"
+                ],
+                battlefields: []
+            },
+            {
+                name: "Battle of Legends, Vol 2",
+                fighters: [
+                    "Sun Wukong",
+                    "Yennenga",
+                    "Achilles",
+                    "Bloody Mary"
+                ],
+                battlefields: [
+                    {
+                        name: "Hanging Gardens",
+                        players: 4
+                    }
+                ]
+            }
+        ]
+    },
+    methods: {
+        randomize: function(array) {
+            return array[Math.floor((Math.random()*array.length))]
+        },
+        getSetup: function() {
+            this.errorMessage = ''
+            var count = 2
+            if (this.count === "Four") { count = 4 }
+            this.players = []
+            var fighters = this.getFighters()
+            var battlefields = this.getBattlefields()
+            if (fighters.length < count) {
+                this.errorMessage += "There are not enough fighters in the sets you've selected. "
+            }
+            if (battlefields.length === 0) {
+                this.errorMessage += "There are not enough battlefields available in the sets you've selected. "
+            }
+            if (this.errorMessage.length > 0) {
+                this.showSetup = false
+                return
+            }
+            while (this.players.length < count) {
+                var fighter = this.randomize(fighters)
+                if (!this.players.includes(fighter)) {
+                    this.players.push(fighter)
+                }
+            } 
+            this.battlefield = this.randomize(battlefields)
+            this.showSetup = true
+        },
+        getFighters: function() {
+            var result = []
+            this.sets.forEach(s => {
+                if (s.include) {
+                    result = result.concat(s.fighters)
+                }
+            })
+            return result
+        },
+        getBattlefields: function() {
+            var result = []
+            this.sets.forEach(s => {
+                if (s.include) {
+                    s.battlefields.forEach(b => {
+                        if (this.count === 'Two' || b.players === 4) {
+                            result.push(b.name + ' (' + s.name + ')')
+                        }
+                    })
+                }
+            })
+            return result
+        },
+        selectAll: function() {
+            this.sets.forEach(s => {
+                s.include = !this.allSelected // seems backwards, but this resolves before checkbox updates
+            })
+        }
+    }
+})
+
+</script>

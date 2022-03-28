@@ -1,0 +1,94 @@
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<html>
+    <body>
+        <div id="unmatchedRandomizer">
+            <br />
+            <h3>Setup randomizer for <i>Godzilla: Tokyo Clash</i></h3>
+            <div>How many players?
+                <select v-model="count">
+                    <option>Two</option>
+                    <option>Three</option>
+                    <option>Four</option>
+                </select>
+            </div>
+            <br />
+            <div v-if="showSetup">
+                <h4>Kaiju:</h4>
+                    <div v-for="(player, index) in players">
+                        Player {{ index + 1 }}: {{ player }}
+                    </div>
+                <h4>Events:</h4>
+                    <div>
+                        Event 1: {{ event1 }}
+                    </div>
+                    <div>
+                        Event 2: {{ event2 }}
+                    </div>
+            </div>
+            <div>
+                <br />
+                <button v-if="!showSetup" @click="getSetup">
+                    Get Setup
+                </button>
+                <button v-if="showSetup" @click="getSetup">
+                    Get a New Setup
+                </button>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+var app = new Vue({
+    el: "#unmatchedRandomizer",
+    data: {
+        players: [],
+        event1: '',
+        event2: '',
+        count: 'Two',
+        showSetup: false,
+        allSelected: false,
+    },
+    methods: {
+        randomize: function(array) {
+            return array[Math.floor((Math.random()*array.length))]
+        },
+        getSetup: function() {
+            this.errorMessage = ''
+            var count = 2
+            if (this.count === "Three") { count = 3 }
+            if (this.count === "Four") { count = 4 }
+            this.players = []
+            var kaiju = this.getKaiju()
+            var events = this.getEvents()
+            while (this.players.length < count) {
+                var k = this.randomize(kaiju)
+                if (!this.players.includes(k)) {
+                    this.players.push(k)
+                }
+            }
+            var indexArray = []
+            for (i = 0; i < count; i++) { indexArray.push(i) }
+            var kingOfMonstersIndex = this.randomize(indexArray)
+            this.players[kingOfMonstersIndex] += " (King of Monsters)"
+            this.event1 = this.randomize(events)
+            var event2Set = false
+            while (!event2Set) {
+                var e = this.randomize(events)
+                if (e !== this.event1) {
+                    this.event2 = e
+                    event2Set = true
+                }
+            }
+            this.showSetup = true
+        },
+        getKaiju: function() {
+            return ["Godzilla", "Megalon", "Mothra", "King Ghidora"]
+        },
+        getEvents: function() {
+            return ["Rush Hour", "Xilian Invasion", "Naval Bombardment", "Air Strikes", "Armored Assault", "Lightning Generators"]
+        },
+    }
+})
+
+</script>

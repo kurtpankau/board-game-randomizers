@@ -1,0 +1,133 @@
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<html>
+    <body>
+        <div id="sentinelsRandomizer">
+            <br />
+            <h3>Setup randomizer for <i>Sentinels of the Multiverse: Definitive Edition</i></h3>
+            <span>How many heroes?
+                <select v-model="count">
+                    <option>Three</option>
+                    <option>Four</option>
+                    <option>Five</option>
+                    <option>Surprise me</option>
+                </select>
+            </span>
+            <div v-if="showSetup">
+                <h4>Heroes:</h4>
+                    <div v-for="(player, index) in players">
+                        Player {{ index + 1 }}: {{ player }}
+                    </div>
+                <h4>Villain:</h4>
+                {{ villain }}
+                <h4>Environment:</h4>
+                {{ environment }}
+            </div>
+            <div>
+                <br />
+                <button v-if="!showSetup" @click="getSetup">
+                    Get Setup
+                </button>
+                <button v-if="showSetup" @click="getSetup">
+                    Get a New Setup
+                </button>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+var app = new Vue({
+    el: "#sentinelsRandomizer",
+    data: {
+        players: [],
+        villain: '',
+        environment: '',
+        count: 'Surprise me',
+        showSetup: false
+    },
+    methods: {
+        randomize: function(array) {
+            return array[Math.floor((Math.random()*array.length))]
+        },
+        getSetup: function() {
+            var heroes = [
+                {
+                    name: "Legacy",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Wraith",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Bunker",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Tachyon",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Absolute Zero",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Unity",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Argent Adept",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Fanatic",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Captain Cosmic",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Tempest",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Haka",
+                    variants: ["First Appearance"]
+                },
+                {
+                    name: "Ra",
+                    variants: ["First Appearance"]
+                }
+            ]
+            var villains = ["Baron Blade", "Mad Bomber Blade", "Citizen Dawn", "Sunrise Citizen Dawn", "Grand Warlord Voss", "Censor", "Omnitron", "Cosmic Omnitron", "The Matriarch", "The MOCKtriarch", "Akash'Bhuta", "Akash'Mecha"]
+            var environments = ["Megalopolis", "Freedom Tower", "Insula Primalis", "Magmaria", "The Ruins of Atlantis", "Wagner Mars Base"]
+            var count = this.randomize([3,4,5])
+            if (this.count === "Three") { count = 3 }
+            if (this.count === "Four") { count = 4 }
+            if (this.count === "Five") { count = 5 }
+            var players = []
+            this.players = []
+            while (players.length < count) {
+                var player = this.randomize(heroes)
+                if (!players.includes(player)) {
+                    players.push(player)
+                }
+            }
+            for (var i = 0; i < players.length; i++) {
+                var e = players[i]
+                var player = e.name
+                var variantIndex = Math.floor((Math.random()*(e.variants.length + 1)))
+                if (variantIndex < e.variants.length) {
+                    player += (' (' + e.variants[variantIndex] + ')')
+                }
+                this.players.push(player)
+            }
+            this.villain = this.randomize(villains)
+            this.environment = this.randomize(environments)
+            this.showSetup = true
+        }
+    }
+})
+
+</script>
