@@ -183,6 +183,34 @@ var app = new Vue({
                         players: 4
                     }
                 ]
+            },
+            {
+                name: "Marvel: Redemption Row",
+                fighters: [
+                    "Ghost Rider",
+                    "Moon Knight",
+                    "Luke Cage"
+                ],
+                battlefields: [
+                    {
+                        name: "The Raft",
+                        players: 4
+                    }
+                ]
+            },
+            {
+                name: "Marvel: Hell's Kitchen",
+                fighters: [
+                    "Daredevil",
+                    "Elektra",
+                    "Bullseye"
+                ],
+                battlefields: [
+                    {
+                        name: "Hell's Kitchen",
+                        players: 4
+                    }
+                ]
             }
         ]
     },
@@ -193,6 +221,7 @@ var app = new Vue({
         getSetup: function() {
             this.errorMessage = ''
             var count = 2
+            if (this.count === "Three") { count = 3 }
             if (this.count === "Four") { count = 4 }
             this.players = []
             var fighters = this.getFighters()
@@ -226,11 +255,14 @@ var app = new Vue({
             return result
         },
         getBattlefields: function() {
+            var count = 2
+            if (this.count === "Three") { count = 3 }
+            if (this.count === "Four") { count = 4 }
             var result = []
             this.sets.forEach(s => {
                 if (s.include) {
                     s.battlefields.forEach(b => {
-                        if (this.count === 'Two' || b.players === 4) {
+                        if (b.players >= count) {
                             result.push(b.name + ' (' + s.name + ')')
                         }
                     })
