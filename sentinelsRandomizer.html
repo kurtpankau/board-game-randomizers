@@ -12,6 +12,14 @@
                     <option>Surprise me</option>
                 </select>
             </span>
+            <br />
+            <div>
+                Select Sets:
+            </div>
+            <div v-for="set in sets">
+                <input type="checkbox" v-model="set.include" />
+                <label>{{ set.name }}</label>
+            </div>
             <div v-if="showSetup">
                 <h4>Heroes:</h4>
                     <div v-for="(player, index) in players">
@@ -31,6 +39,7 @@
                     Get a New Setup
                 </button>
             </div>
+            <p> {{ errorMessage }}</p>
         </div>
     </body>
 </html>
@@ -43,89 +52,104 @@ var app = new Vue({
         villain: '',
         environment: '',
         count: 'Surprise me',
-        showSetup: false
+        showSetup: false,
+        errorMessage: '',
+        sets: [
+            {
+                name: "Sentinels of the Multiverse",
+                heroes: ["Legacy","The Wraith","Bunker","Tachyon","Absolute Zero","Unity","The Argent Adept","Fanatic","Captain Cosmic","Tempest","Haka","Ra"],
+                villains:  ["Baron Blade", "Mad Bomber Blade", "Citizen Dawn", "Sunrise Citizen Dawn", "Grand Warlord Voss", "Censor", "Omnitron", "Cosmic Omnitron", "The Matriarch", "The MOCKtriarch", "Akash'Bhuta", "Akash'Mecha"],
+                environments: ["Megalopolis", "Freedom Tower", "Insula Primalis", "Magmaria", "The Ruins of Atlantis", "Wagner Mars Base"],
+                variants: {},
+                include: true
+            },
+            {
+                name: "Rook City Renegades",
+                heroes: ["Nightmist", "Mister Fixer", "Setback", "Expatriette", "The Harpy", "Alpha"],
+                villains: ["Gloomweaver", "Soultaker Gloomweaver", "The Organization", "The Bear", "The Fey-Court", "War-Girded Dagda and Morrigan", "Kismet", "Empowered Kismet", "Spite", "Abomination Spite", "Plague Rat", "Dr. Toxica", "Ambuscade", "Vainglorious Ambuscade", "The Terrorform", "The Terrorfrom Mark III", "Apex", "Blood-Leashed Apex"],
+                environments: ["Rook City", "Pike Industrial Complex", "Diamond Manor", "The Temple of Zhu Long", "The Realm of Discord"],
+                variants: {
+                    "Alpha": ["Reporter Alpha", "Alpha 2000"],
+                    "Nightmist": ["Dark Watch Nightmist", "Mentor Nightmist"],
+                    "Mister Fixer": ["Dark Watch Mister Fixer", "Black Fist"],
+                    "Setback": ["Dark Watch Setback", "Fey-Cursed Setback"],
+                    "The Harpy": ["Dark Watch Harpy", "Blood Raven Harpy"],
+                    "Expatriette": ["Dark Watch Expatriette", "Eclipse"],
+                    "Ra": ["Backdraft Ra"],
+                    "Haka": ["Werewolf Haka"],
+                    "Unity": ["Scavenger Unity"],
+                    "The Wraith": ["Detective Wraith"],
+                    "Bunker": ["Stealth Suit Bunker"],
+                    "Fanatic": ["Haunted Fanatic"]
+                }
+            }
+        ]
     },
     methods: {
         randomize: function(array) {
-            return array[Math.floor((Math.random()*array.length))]
+            return array[Math.floor((Math.random() * array.length))]
         },
         getSetup: function() {
-            var heroes = [
-                {
-                    name: "Legacy",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Wraith",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Bunker",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Tachyon",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Absolute Zero",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Unity",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Argent Adept",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Fanatic",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Captain Cosmic",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Tempest",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Haka",
-                    variants: ["First Appearance"]
-                },
-                {
-                    name: "Ra",
-                    variants: ["First Appearance"]
-                }
-            ]
-            var villains = ["Baron Blade", "Mad Bomber Blade", "Citizen Dawn", "Sunrise Citizen Dawn", "Grand Warlord Voss", "Censor", "Omnitron", "Cosmic Omnitron", "The Matriarch", "The MOCKtriarch", "Akash'Bhuta", "Akash'Mecha"]
-            var environments = ["Megalopolis", "Freedom Tower", "Insula Primalis", "Magmaria", "The Ruins of Atlantis", "Wagner Mars Base"]
+            this.errorMessage = ''
+            if (!this.sets.find(e => e.include)) {
+                this.errorMessage = 'Please select at least one set'
+                return
+            }
             var count = this.randomize([3,4,5])
             if (this.count === "Three") { count = 3 }
             if (this.count === "Four") { count = 4 }
             if (this.count === "Five") { count = 5 }
             var players = []
             this.players = []
+            var heroes = this.getHeroes()
             while (players.length < count) {
                 var player = this.randomize(heroes)
                 if (!players.includes(player)) {
                     players.push(player)
                 }
             }
-            for (var i = 0; i < players.length; i++) {
-                var e = players[i]
-                var player = e.name
-                var variantIndex = Math.floor((Math.random()*(e.variants.length + 1)))
-                if (variantIndex < e.variants.length) {
-                    player += (' (' + e.variants[variantIndex] + ')')
-                }
-                this.players.push(player)
-            }
-            this.villain = this.randomize(villains)
-            this.environment = this.randomize(environments)
+            players.forEach(p => {
+                this.players.push(this.getVariant(p))
+            })
+            this.villain = this.getVillain()
+            this.environment = this.getEnvironment()
             this.showSetup = true
+        },
+        getHeroes: function() {
+            var result = []
+            this.sets.forEach(s => {
+                if (s.include) {
+                    result = result.concat(s.heroes)
+                }
+            })
+            return result
+        },
+        getVariant: function(hero) {
+            var variants = [hero, `First Appearance ${hero}`]
+            this.sets.forEach(s => {
+                if (s.include && s.variants[hero]) {
+                    variants = variants.concat(s.variants[hero])
+                }
+            })
+            return this.randomize(variants)
+        },
+        getVillain: function() {
+            var villains = []
+            this.sets.forEach(s => {
+                if (s.include) {
+                    villains = villains.concat(s.villains)
+                }
+            })
+            return this.randomize(villains)
+        },
+        getEnvironment: function() {
+            var envs = []
+            this.sets.forEach(s => {
+                if (s.include) {
+                    envs = envs.concat(s.environments)
+                }
+            })
+            return this.randomize(envs)
         }
     }
 })
