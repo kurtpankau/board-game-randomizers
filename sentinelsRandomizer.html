@@ -66,7 +66,7 @@ var app = new Vue({
             {
                 name: "Rook City Renegades",
                 heroes: ["Nightmist", "Mister Fixer", "Setback", "Expatriette", "The Harpy", "Alpha"],
-                villains: ["Gloomweaver", "Soultaker Gloomweaver", "The Organization", "The Bear", "The Fey-Court", "War-Girded Dagda and Morrigan", "Kismet", "Empowered Kismet", "Spite", "Abomination Spite", "Plague Rat", "Dr. Toxica", "Ambuscade", "Vainglorious Ambuscade", "The Terrorform", "The Terrorfrom Mark III", "Apex", "Blood-Leashed Apex"],
+                villains: ["Gloomweaver", "Soultaker Gloomweaver", "The Organization", "The Bear (The Oranization)", "The Fey-Court", "War-Girded Dagda and Morrigan", "Kismet", "Empowered Kismet", "Spite", "Abomination Spite", "Plague Rat", "Dr. Toxica (Plague Rat)", "Ambuscade", "Vainglorious Ambuscade", "The Terrorform", "The Terrorfrom Mark III", "Apex", "Blood-Leashed Apex"],
                 environments: ["Rook City", "Pike Industrial Complex", "Diamond Manor", "The Temple of Zhu Long", "The Realm of Discord"],
                 variants: {
                     "Alpha": ["Reporter Alpha", "Alpha 2000"],
@@ -74,13 +74,40 @@ var app = new Vue({
                     "Mister Fixer": ["Dark Watch Mister Fixer", "Black Fist"],
                     "Setback": ["Dark Watch Setback", "Fey-Cursed Setback"],
                     "The Harpy": ["Dark Watch Harpy", "Blood Raven Harpy"],
-                    "Expatriette": ["Dark Watch Expatriette", "Eclipse"],
+                    "Expatriette": ["Dark Watch Expatriette", "Eclipse (Expatriette)"],
                     "Ra": ["Backdraft Ra"],
                     "Haka": ["Werewolf Haka"],
                     "Unity": ["Scavenger Unity"],
                     "The Wraith": ["Detective Wraith"],
                     "Bunker": ["Stealth Suit Bunker"],
                     "Fanatic": ["Haunted Fanatic"]
+                }
+            },
+            {
+                name: "Disparation",
+                heroes: ["Chrono-Ranger", "Darkstrife/Painstake", "Omnitron-X", "K.N.Y.F.E.", "Parse", "The Visionary"],
+                villains: ["Apostate", "Extremeverse Apostate", "The Dreamer", "Mr. Jitters (The Dreamer)", "The Ennead", "Sobek (The Ennead)", "Grimm", "Harvest Lord Grimm", "Iron Legacy", "Legacy of Destruction", "La Capitan", "La Capita: Sliver of Creation", "Miss Information", "Amenia Twain Kidnapped", "Necrosis", "Smog-Husk Necrosis", "The Ruler of Aeternus", "Aeturnus Incarnate"],
+                environments: ["The Tomb of Anubis", "Silver Gulch, 1883", "The Final Wasteland", "Aeturnus", "The Block"],
+                variants: {
+                    "Legacy": ["America's Boldest Legacy"],
+                    "The Wraith": ["Freedom Six Wraith"],
+                    "Bunker": ["Freedom Six Bunker"],
+                    "Tachyon": ["Extreme Tachyon", "Freedom Six Tachyon"],
+                    "Absolute Zero": ["Frostbite (Absolute Zero)", "Freedom Six Absolute Zero"],
+                    "Unity": ["Freedom Six Unity"],
+                    "The Argent Adept": ["The Ashen Heir (Argent Adept)"],
+                    "Fanatic": ["Redeemer Fanatic"],
+                    "Captain Cosmic": ["Inversiverse Captain Cosmic"],
+                    "Tempest": ["Shockwave (Tempest)", "Freedom Six Tempest"],
+                    "Haka": ["The Etenal Haka"],
+                    "Ra": ["Ra, Horus of Two Horizons"],
+                    "Chrono-Ranger": ["Chrono-Ranger, Tengu-Hunter", "Wind-Walker (Chrono-Ranger)"],
+                    "Darkstrife": ["Prince Darkstrife", "Soulseeker Darkstrife"],
+                    "Painstake": ["Painstake the Betrayer", "Soulseeker Painstake"],
+                    "K.N.Y.F.E.": ["Fighting Spirit K.N.Y.F.E.", "K.N.Y.F.E., Rogue Agent"],
+                    "Omnitron-X": ["Omni-Chan", "Omnitron-U"],
+                    "Parse": ["Spacefarer Parse", "Terminarch Parse"],
+                    "The Visionary": ["Dark Visionary", "The Fishionary"]
                 }
             }
         ]
@@ -125,6 +152,18 @@ var app = new Vue({
             return result
         },
         getVariant: function(hero) {
+            if (hero === "Darkstrife/Painstake") {
+                var heroes = hero.split("/")
+                var variants = []
+                for (var i = 0; i < heroes.length; i++) {
+                    variants[i] = this.getVariant(heroes[i])
+                }
+                var result = variants[0]
+                for (var i = 1; i < variants.length; i++) {
+                    result += " / " +variants[i]
+                }
+                return result
+            }
             var variants = [hero, `First Appearance ${hero}`]
             this.sets.forEach(s => {
                 if (s.include && s.variants[hero]) {
@@ -140,7 +179,14 @@ var app = new Vue({
                     villains = villains.concat(s.villains)
                 }
             })
-            return this.randomize(villains)
+            var result = this.randomize(villains)
+            if (result === "Amenia Twain Kidnapped") {
+                result += " by " + this.getVillain()
+            }
+            if (result.includes("Amenia Twain Kidnapped by Amenia Twain Kidnapped")) {
+                return this.getVillain()
+            }
+            return result
         },
         getEnvironment: function() {
             var envs = []
