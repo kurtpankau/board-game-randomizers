@@ -58,7 +58,7 @@ var app = new Vue({
             {
                 name: "Sentinels of the Multiverse",
                 heroes: ["Legacy","The Wraith","Bunker","Tachyon","Absolute Zero","Unity","The Argent Adept","Fanatic","Captain Cosmic","Tempest","Haka","Ra"],
-                villains:  ["Baron Blade", "Mad Bomber Blade", "Citizen Dawn", "Sunrise Citizen Dawn", "Grand Warlord Voss", "Censor", "Omnitron", "Cosmic Omnitron", "The Matriarch", "The MOCKtriarch", "Akash'Bhuta", "Akash'Mecha"],
+                villains:  ["Baron Blade", "Mad Bomber Blade", "Citizen Dawn", "Sunrise Citizen Dawn", "Grand Warlord Voss", "Censor (Grand Warlod Voss)", "Omnitron", "Cosmic Omnitron", "The Matriarch", "The MOCKtriarch", "Akash'Bhuta", "Akash'Mecha"],
                 environments: ["Megalopolis", "Freedom Tower", "Insula Primalis", "Magmaria", "The Ruins of Atlantis", "Wagner Mars Base"],
                 variants: {},
                 include: true
@@ -86,7 +86,7 @@ var app = new Vue({
             {
                 name: "Disparation",
                 heroes: ["Chrono-Ranger", "Darkstrife/Painstake", "Omnitron-X", "K.N.Y.F.E.", "Parse", "The Visionary"],
-                villains: ["Apostate", "Extremeverse Apostate", "The Dreamer", "Mr. Jitters (The Dreamer)", "The Ennead", "Sobek (The Ennead)", "Grimm", "Harvest Lord Grimm", "Iron Legacy", "Legacy of Destruction", "La Capitan", "La Capita: Sliver of Creation", "Miss Information", "Amenia Twain Kidnapped", "Necrosis", "Smog-Husk Necrosis", "The Ruler of Aeternus", "Aeturnus Incarnate"],
+                villains: ["Apostate", "Extremeverse Apostate", "The Dreamer", "Mr. Jitters (The Dreamer)", "The Ennead", "Sobek (The Ennead)", "Grimm", "Harvest Lord Grimm", "Iron Legacy", "Legacy of Destruction", "La Capitan", "La Capitan: Sliver of Creation", "Miss Information", "Amenia Twain Kidnapped", "Necrosis", "Smog-Husk Necrosis", "The Ruler of Aeternus", "Aeturnus Incarnate"],
                 environments: ["The Tomb of Anubis", "Silver Gulch, 1883", "The Final Wasteland", "Aeturnus", "The Block"],
                 variants: {
                     "Legacy": ["America's Boldest Legacy"],
@@ -183,7 +183,7 @@ var app = new Vue({
             if (result === "Amenia Twain Kidnapped") {
                 result += " by " + this.getVillain()
             }
-            if (result.includes("Amenia Twain Kidnapped by Amenia Twain Kidnapped")) {
+            if (result.includes("Amenia Twain Kidnapped by Amenia Twain Kidnapped") || result === "Amenia Twain Kidnapped by Miss Information") {
                 return this.getVillain()
             }
             return result
