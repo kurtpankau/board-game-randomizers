@@ -99,7 +99,7 @@ var app = new Vue({
                     "Fanatic": ["Redeemer Fanatic"],
                     "Captain Cosmic": ["Inversiverse Captain Cosmic"],
                     "Tempest": ["Shockwave (Tempest)", "Freedom Six Tempest"],
-                    "Haka": ["The Etenal Haka"],
+                    "Haka": ["The Eternal Haka"],
                     "Ra": ["Ra, Horus of Two Horizons"],
                     "Chrono-Ranger": ["Chrono-Ranger, Tengu-Hunter", "Wind-Walker (Chrono-Ranger)"],
                     "Darkstrife": ["Prince Darkstrife", "Soulseeker Darkstrife"],
@@ -195,7 +195,13 @@ var app = new Vue({
                     envs = envs.concat(s.environments)
                 }
             })
-            return this.randomize(envs)
+            var result = this.randomize(envs)
+            if (this.villain === "La Capitan: Sliver of Creation") {
+                envs.splice(envs.indexOf(result), 1)
+                var newEnv = this.randomize(envs)
+                result += " / " + newEnv
+            }
+            return result
         }
     }
 })
